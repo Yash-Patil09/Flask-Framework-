@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>🚀 Futuristic Calculator 🚀</h1>
+        <form id="calculator-form">
+            <input type="number" name="num1" id="num1" placeholder="Enter Number 1" required>
+            <input type="number" name="num2" id="num2" placeholder="Enter Number 2" required>
+            
+            <div class="operation-buttons">
+                <button type="button" onclick="setOperation('add')">+</button>
+                <button type="button" onclick="setOperation('subtract')">-</button>
+                <button type="button" onclick="setOperation('multiply')">×</button>
+                <button type="button" onclick="setOperation('divide')">÷</button>
+            </div>
+
+            <button type="button" onclick="calculate()">Calculate</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        let selectedOperation = '';
+
+        function setOperation(operation) {
+            selectedOperation = operation;
+        }
+
+        function calculate() {
+            const num1 = document.getElementById('num1').value;
+            const num2 = document.getElementById('num2').value;
+            const operation = selectedOperation;
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `num1=${num1}&num2=${num2}&operation=${operation}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.error) {
+                    resultDiv.textContent = data.error;
+                    resultDiv.style.color = 'red';
+                } else {
+                    resultDiv.textContent = `Result: ${data.result}`;
+                    resultDiv.style.color = '#27ae60'; // Green color
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
